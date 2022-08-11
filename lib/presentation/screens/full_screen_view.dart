@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart';
 import 'package:my_storage/cubit/my_storage_cubit.dart';
@@ -30,14 +28,13 @@ class FullScreenPage extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 mime = lookupMimeType('', headerBytes: snapshot.data);
-                // print('');
               } else {
-                return const Center(child: Text('Неизвестный формат файла'));
+                return const Center(child: CircularProgressIndicator());
               }
               if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
                 return Image.memory(snapshot.data);
               }
-              if (mime == 'video/mp4') {
+              if (/*mime == 'video/mp4'*/ true) {
                 return VideoPlayerWidget(fileId: fileId);
               } else {
                 return const Center(child: Text('Ошибка, повторите запрос позже'));
@@ -45,7 +42,9 @@ class FullScreenPage extends StatelessWidget {
             },
           );
         } else {
-          return Container();
+          return const Center(
+            child: Text('text'),
+          );
         }
       }),
     );
@@ -66,29 +65,39 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
-    final Uint8List bytes = myStorageCubit.getFileView(widget.fileId) as Uint8List;
-    final videoFile = File('');
-    videoFile.writeAsBytes(bytes);
-    _controller = VideoPlayerController.file(videoFile);
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _controller.value.isPlaying ? _controller.pause() : _controller.play();
+
+    return FutureBuilder(
+        future: Future.wait([myStorageCubit.getFileView(widget.fileId), myStorageCubit.getDocDirectory()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.hasData && snapshot.data?[0] != null) {
+            final Directory appDocDirectory = snapshot.data?[1];
+            final videoFile = File('${appDocDirectory.path}/video.mp4');
+            print(videoFile.path);
+            videoFile.writeAsBytesSync(snapshot.data![0]);
+            _controller = VideoPlayerController.file(videoFile);
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _controller.value.isPlaying ? _controller.pause() : _controller.play();
+                });
+              },
+              child: Center(
+                child: _controller.value.isInitialized
+                    ? Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          ),
+                        ],
+                      )
+                    : Container(),
+              ),
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
         });
-      },
-      child: Center(
-        child: _controller.value.isInitialized
-            ? Column(
-                children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
-                ],
-              )
-            : Container(),
-      ),
-    );
   }
 
   @override

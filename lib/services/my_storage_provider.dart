@@ -1,8 +1,10 @@
 // ignore_for_file: library_prefixes, prefer_typing_uninitialized_variables, unused_local_variable
 
+import 'dart:io';
 
 import 'package:appwrite/appwrite.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 const endPoint = "http://localhost:80/v1";
 const emulatorEndPoint = "http://10.0.2.2:80/v1";
@@ -30,7 +32,6 @@ class MyStorageProvider {
     getFiles();
   }
 
-
   login() async {
     try {
       await Account(client).getSessions();
@@ -42,14 +43,6 @@ class MyStorageProvider {
   getFiles() async {
     try {
       return await storage.listFiles(bucketId: bucketId);
-    } on AppwriteException catch (e) {
-      throw Exception(e.message);
-    }
-  }
-
-  getFilePreview({required String fileId}) async {
-    try {
-      return storage.getFilePreview(bucketId: bucketId, fileId: fileId, height: 250, width: 250);
     } on AppwriteException catch (e) {
       throw Exception(e.message);
     }
@@ -73,12 +66,24 @@ class MyStorageProvider {
       throw Exception(e.message);
     }
   }
+  
+  getFilePreview({required String fileId}) async {
+    try {
+      return storage.getFilePreview(bucketId: bucketId, fileId: fileId, height: 250, width: 250);
+    } on AppwriteException catch (e) {
+      throw Exception(e.message);
+    }
+  }
 
-    getFileView({required String fileId}) async {
+  getFileView({required String fileId}) async {
     try {
       return storage.getFileView(bucketId: bucketId, fileId: fileId);
     } on AppwriteException catch (e) {
       throw Exception(e.message);
     }
   }
+
+  Future<Directory> getDocDirectory() async => await getApplicationDocumentsDirectory();
+
+  
 }

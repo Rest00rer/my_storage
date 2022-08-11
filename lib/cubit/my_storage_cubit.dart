@@ -1,5 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:my_storage/models/my_storage.dart';
@@ -53,6 +55,11 @@ class MyStorageCubit extends Cubit<MyStorageState> {
 
   Future<dynamic> getFileView(String fileId) {
     return _myStorageProvider.getFileView(fileId: fileId);
+  }
+
+  Future<Directory> getDocDirectory() async {
+    Directory resultDir = await  _myStorageProvider.getDocDirectory();
+    return resultDir;
   }
 
 }
