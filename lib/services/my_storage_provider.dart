@@ -1,4 +1,4 @@
-// ignore_for_file: library_prefixes, prefer_typing_uninitialized_variables, unused_local_variable
+
 
 import 'dart:io';
 
@@ -61,12 +61,12 @@ class MyStorageProvider {
 
   deleteFile(String fileId) async {
     try {
-      Future result = storage.deleteFile(bucketId: bucketId, fileId: fileId);
+      storage.deleteFile(bucketId: bucketId, fileId: fileId);
     } on AppwriteException catch (e) {
       throw Exception(e.message);
     }
   }
-  
+
   getFilePreview({required String fileId}) async {
     try {
       return storage.getFilePreview(bucketId: bucketId, fileId: fileId, height: 250, width: 250);
@@ -83,7 +83,22 @@ class MyStorageProvider {
     }
   }
 
-  Future<Directory> getDocDirectory() async => await getApplicationDocumentsDirectory();
+  Future<File> getVideoFile({required String fileId}) async {
+    File videoFile = File('');
 
-  
+    await getDocDirectory().then((directory) {
+      videoFile = File('${directory.path}/video.mp4');
+    }).then((value) {
+      try {
+        storage.getFileView(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+          videoFile.writeAsBytes(uint8ListBytes).then((_) => _);
+        });
+      } on AppwriteException catch (e) {
+        throw Exception(e.message);
+      }
+    });
+    return videoFile;
+  }
+
+  Future<Directory> getDocDirectory() async => await getApplicationDocumentsDirectory();
 }

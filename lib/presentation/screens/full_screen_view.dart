@@ -1,12 +1,10 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
-import 'dart:io';
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart';
 import 'package:my_storage/cubit/my_storage_cubit.dart';
-import 'package:video_player/video_player.dart';
+import 'package:my_storage/presentation/widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
   final String fileId;
@@ -36,9 +34,10 @@ class FullScreenPage extends StatelessWidget {
               }
               if (/*mime == 'video/mp4'*/ true) {
                 return VideoPlayerWidget(fileId: fileId);
-              } else {
-                return const Center(child: Text('Ошибка, повторите запрос позже'));
               }
+              // else {
+              //   return const Center(child: Text('Ошибка, повторите запрос позже'));
+              // }
             },
           );
         } else {
@@ -60,49 +59,60 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller;
+  // late VideoPlayerController _controller;
+  // final myStorageProvider = MyStorageProvider()..initialize();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   // myStorageProvider.getVideoFile(fileId: widget.fileId).then((value) {
+  //     _controller = VideoPlayerController.network('https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4')
+  //       ..initialize().then((_) {
+  //         setState(() {});
+  //       });
+  //   // });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
+    // final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
 
-    return FutureBuilder(
-        future: Future.wait([myStorageCubit.getFileView(widget.fileId), myStorageCubit.getDocDirectory()]),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (snapshot.hasData && snapshot.data?[0] != null) {
-            final Directory appDocDirectory = snapshot.data?[1];
-            final videoFile = File('${appDocDirectory.path}/video.mp4');
-            print(videoFile.path);
-            videoFile.writeAsBytesSync(snapshot.data![0]);
-            _controller = VideoPlayerController.file(videoFile);
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _controller.value.isPlaying ? _controller.pause() : _controller.play();
-                });
-              },
-              child: Center(
-                child: _controller.value.isInitialized
-                    ? Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio,
-                            child: VideoPlayer(_controller),
-                          ),
-                        ],
-                      )
-                    : Container(),
-              ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        });
+    //  return FutureBuilder(
+    // future: myStorageCubit.getVideoFile(fileId: widget.fileId),
+    // builder: (context, snapshot) {
+    //if (snapshot.hasData && snapshot.data != null) {
+    // controller = VideoPlayerController.network('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
+    //   ..initialize().then((_) {
+    //     setState(() {});
+    //   });
+
+    return Video.blocProvider(
+      'assets/video.mp4',
+      aspectRatio: 2.0,
+    );
+    // Center(
+    //   child: _controller.value.isInitialized
+    //       ? Column(
+    //           children: [
+    //             AspectRatio(
+    //               aspectRatio: _controller.value.aspectRatio,
+    //               child: VideoPlayer(_controller),
+    //             ),
+    //           ],
+    //         )
+    //       : Container(),
+    // );
+    //    }// else {
+    // return const Center(child: CircularProgressIndicator());
+    // }
+    //   },
+    /*);*/
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _controller.dispose();
+  // }
 }

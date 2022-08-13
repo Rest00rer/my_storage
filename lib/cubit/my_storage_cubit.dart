@@ -58,8 +58,11 @@ class MyStorageCubit extends Cubit<MyStorageState> {
   }
 
   Future<Directory> getDocDirectory() async {
-    Directory resultDir = await  _myStorageProvider.getDocDirectory();
+    Directory resultDir = await _myStorageProvider.getDocDirectory();
     return resultDir;
   }
 
+  Future<File>getVideoFile({required String fileId}) async {
+    return _myStorageProvider.getVideoFile(fileId: fileId);
+  }
 }

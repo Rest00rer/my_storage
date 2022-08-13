@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'presentation/screens/app_router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<App> createState() => _AppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _AppState extends State<App> {
   final _router = AppRouter();
   @override
   Widget build(BuildContext context) {
