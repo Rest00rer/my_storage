@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_storage/cubit/my_storage_cubit.dart';
-import 'package:my_storage/presentation/screens/full_screen_view.dart';
 
-import 'home_page.dart';
+import 'cubit/my_storage_cubit.dart';
+import 'presentation/screens/full_screen_view.dart';
+import 'presentation/screens/home_page.dart';
 
 class AppRouter {
   final _myStorageCubit = MyStorageCubit();

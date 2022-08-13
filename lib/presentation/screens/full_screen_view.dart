@@ -1,12 +1,9 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart';
 import 'package:my_storage/cubit/my_storage_cubit.dart';
-import 'package:my_storage/cubit/video_player_cubit.dart';
 import 'package:my_storage/presentation/widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
@@ -35,12 +32,12 @@ class FullScreenPage extends StatelessWidget {
               if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
                 return Image.memory(snapshot.data);
               }
-              if (/*mime == 'video/mp4'*/ true) {
+              if (mime == 'video/mp4') {
                 return VideoPlayerWidget(fileId: fileId);
               }
-              // else {
-              //   return const Center(child: Text('Ошибка, повторите запрос позже'));
-              // }
+              else {
+                return const Center(child: Text('Ошибка, повторите запрос позже'));
+              }
             },
           );
         } else {

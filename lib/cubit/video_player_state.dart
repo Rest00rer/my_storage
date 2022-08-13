@@ -4,26 +4,22 @@ import 'package:video_player/video_player.dart';
 
 abstract class VideoPlayerState {}
 
-class InitializationVideoPlayerState{
+class InitializationVideoPlayerState {
   InitializationVideoPlayerState({
-    required this.controller,
+    required this.mainController,
     required this.loaded,
   });
 
-  factory InitializationVideoPlayerState.initialize({
-    required File videoFile,
-  }) {
-    final controller = VideoPlayerController.file(
-      videoFile,
-    );
+  final VideoPlayerController mainController;
+  final bool loaded;
+
+  factory InitializationVideoPlayerState.initialize({required File videoFile}) {
+    final newController = VideoPlayerController.file(videoFile);
     return InitializationVideoPlayerState(
-      controller: controller,
+      mainController: newController,
       loaded: false,
     );
   }
-
-  final VideoPlayerController controller;
-  final bool loaded;
 
   bool get notLoaded => !loaded;
 
@@ -32,8 +28,13 @@ class InitializationVideoPlayerState{
     bool? loaded,
   }) {
     return InitializationVideoPlayerState(
-      controller: controller ?? this.controller,
+      mainController: controller ?? mainController,
       loaded: loaded ?? this.loaded,
     );
   }
+}
+
+class InitializeAndPlayState extends VideoPlayerState {
+  final VideoPlayerController controller;
+  InitializeAndPlayState(this.controller);
 }

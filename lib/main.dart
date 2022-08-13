@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'presentation/screens/app_router.dart';
+import 'app_router.dart';
 
 void main() {
   runApp(const App());

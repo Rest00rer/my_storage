@@ -10,18 +10,23 @@ class VideoPlayerCubit extends Cubit<InitializationVideoPlayerState> {
       : super(InitializationVideoPlayerState.initialize(
           videoFile: videoFile,
         )) {
-    state.controller.addListener(() {});
-    state.controller.setLooping(true);
-    state.controller.initialize().then((_) {
-      emit(state.copyWith(loaded: true, controller: state.controller));
+    state.mainController.addListener(() {});
+    state.mainController.setLooping(false);
+    state.mainController.initialize().then((_) {
+      emit(state.copyWith(loaded: true, controller: state.mainController));
       if (autoPlay) {
-        state.controller.play();
+        state.mainController.play();
       }
     }).onError((error, stackTrace) {
       print(error);
       print(stackTrace);
     });
   }
-}
 
-  
+  Future<bool> dispose() async {
+    bool isDispose = true;
+    state.mainController.pause();
+    state.mainController.dispose();
+    return isDispose;
+  }
+}

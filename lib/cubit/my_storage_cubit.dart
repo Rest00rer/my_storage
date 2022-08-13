@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages, avoid_print
 
 import 'dart:io';
 
@@ -37,7 +37,7 @@ class MyStorageCubit extends Cubit<MyStorageState> {
       final response = await _myStorageProvider.createFile();
       emit(StorageLoadedState(myStorage: MyStorage(files: response.files)));
     } catch (errorMsg) {
-      emit(StorageErrorState(errorMsg: errorMsg.toString()));
+      print(errorMsg);
     }
   }
 
