@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart';
@@ -59,60 +61,22 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  // late VideoPlayerController _controller;
-  // final myStorageProvider = MyStorageProvider()..initialize();
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   // myStorageProvider.getVideoFile(fileId: widget.fileId).then((value) {
-  //     _controller = VideoPlayerController.network('https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4')
-  //       ..initialize().then((_) {
-  //         setState(() {});
-  //       });
-  //   // });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
+    final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
 
-    //  return FutureBuilder(
-    // future: myStorageCubit.getVideoFile(fileId: widget.fileId),
-    // builder: (context, snapshot) {
-    //if (snapshot.hasData && snapshot.data != null) {
-    // controller = VideoPlayerController.network('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
-    //   ..initialize().then((_) {
-    //     setState(() {});
-    //   });
-
-    return Video.blocProvider(
-      'assets/video.mp4',
-      aspectRatio: 2.0,
+    return FutureBuilder(
+      future: myStorageCubit.getVideoFile(fileId: widget.fileId),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return Video.blocProvider(
+            snapshot.data!,
+            aspectRatio: 2.0,
+          );
+        } else {
+          return Container();
+        }
+      },
     );
-    // Center(
-    //   child: _controller.value.isInitialized
-    //       ? Column(
-    //           children: [
-    //             AspectRatio(
-    //               aspectRatio: _controller.value.aspectRatio,
-    //               child: VideoPlayer(_controller),
-    //             ),
-    //           ],
-    //         )
-    //       : Container(),
-    // );
-    //    }// else {
-    // return const Center(child: CircularProgressIndicator());
-    // }
-    //   },
-    /*);*/
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _controller.dispose();
-  // }
 }

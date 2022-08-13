@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerState {
@@ -7,10 +9,10 @@ class VideoPlayerState {
   });
 
   factory VideoPlayerState.initialize({
-    required String uri,
+    required File videoFile,
   }) {
-    final controller = VideoPlayerController.asset(
-      uri,
+    final controller = VideoPlayerController.file(
+      videoFile,
     );
     return VideoPlayerState._(
       controller: controller,
