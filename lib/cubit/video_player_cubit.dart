@@ -5,17 +5,15 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_storage/cubit/video_player_state.dart';
 
-class VideoPlayerCubit extends Cubit<VideoPlayerState> {
+class VideoPlayerCubit extends Cubit<InitializationVideoPlayerState> {
   VideoPlayerCubit(File videoFile, {bool autoPlay = true})
-      : super(VideoPlayerState.initialize(
+      : super(InitializationVideoPlayerState.initialize(
           videoFile: videoFile,
         )) {
     state.controller.addListener(() {});
     state.controller.setLooping(true);
     state.controller.initialize().then((_) {
-      emit(state.copyWith(
-        loaded: true,
-      ));
+      emit(state.copyWith(loaded: true, controller: state.controller));
       if (autoPlay) {
         state.controller.play();
       }
@@ -25,3 +23,5 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
     });
   }
 }
+
+  

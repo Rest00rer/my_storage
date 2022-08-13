@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart';
 import 'package:my_storage/cubit/my_storage_cubit.dart';
+import 'package:my_storage/cubit/video_player_cubit.dart';
 import 'package:my_storage/presentation/widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
@@ -71,7 +72,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         if (snapshot.hasData && snapshot.data != null) {
           return Video.blocProvider(
             snapshot.data!,
-            aspectRatio: 2.0,
           );
         } else {
           return Container();

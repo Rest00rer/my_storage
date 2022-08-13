@@ -9,25 +9,21 @@ import '../../cubit/video_player_state.dart';
 
 class Video extends StatelessWidget {
   final File videoFile;
-  final double aspectRatio;
 
   const Video.context(
     this.videoFile, {
     Key? key,
-    required this.aspectRatio,
   }) : super(key: key);
 
   static Widget blocProvider(
-    final File videoFile, {
-    required double aspectRatio,
-  }) {
+    final File videoFile,
+  ) {
     return BlocProvider(
       create: (context) {
         return VideoPlayerCubit(videoFile);
       },
       child: Video.context(
         videoFile,
-        aspectRatio: aspectRatio,
       ),
     );
   }
@@ -36,13 +32,13 @@ class Video extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
-    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+    return BlocBuilder<VideoPlayerCubit, InitializationVideoPlayerState>(
       builder: (_, state) {
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 100),
           child: AspectRatio(
             key: ValueKey(state.loaded),
-            aspectRatio: aspectRatio,
+            aspectRatio: state.controller.value.aspectRatio,
             child: state.notLoaded ? const Center(child: CircularProgressIndicator()) : VideoPlayer(state.controller),
           ),
         );

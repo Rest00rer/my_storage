@@ -2,19 +2,21 @@ import 'dart:io';
 
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerState {
-  VideoPlayerState._({
+abstract class VideoPlayerState {}
+
+class InitializationVideoPlayerState{
+  InitializationVideoPlayerState({
     required this.controller,
     required this.loaded,
   });
 
-  factory VideoPlayerState.initialize({
+  factory InitializationVideoPlayerState.initialize({
     required File videoFile,
   }) {
     final controller = VideoPlayerController.file(
       videoFile,
     );
-    return VideoPlayerState._(
+    return InitializationVideoPlayerState(
       controller: controller,
       loaded: false,
     );
@@ -25,17 +27,13 @@ class VideoPlayerState {
 
   bool get notLoaded => !loaded;
 
-  VideoPlayerState copyWith({
+  InitializationVideoPlayerState copyWith({
     VideoPlayerController? controller,
     bool? loaded,
   }) {
-    return VideoPlayerState._(
+    return InitializationVideoPlayerState(
       controller: controller ?? this.controller,
       loaded: loaded ?? this.loaded,
     );
-  }
-
-  Future<void> dispose() async {
-    controller.dispose();
   }
 }
