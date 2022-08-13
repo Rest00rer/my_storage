@@ -32,12 +32,12 @@ class FullScreenPage extends StatelessWidget {
               if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
                 return Image.memory(snapshot.data);
               }
-              if (mime == 'video/mp4') {
+              if (/*mime == 'video/mp4'*/true) {
                 return VideoPlayerWidget(fileId: fileId);
               }
-              else {
+              /*else {
                 return const Center(child: Text('Ошибка, повторите запрос позже'));
-              }
+              }*/
             },
           );
         } else {

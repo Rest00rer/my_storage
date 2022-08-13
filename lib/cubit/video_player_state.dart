@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:video_player/video_player.dart';
 
-abstract class VideoPlayerState {}
-
 class InitializationVideoPlayerState {
   InitializationVideoPlayerState({
     required this.mainController,
@@ -32,9 +30,4 @@ class InitializationVideoPlayerState {
       loaded: loaded ?? this.loaded,
     );
   }
-}
-
-class InitializeAndPlayState extends VideoPlayerState {
-  final VideoPlayerController controller;
-  InitializeAndPlayState(this.controller);
 }
