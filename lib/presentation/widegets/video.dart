@@ -15,9 +15,7 @@ class Video extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  static Widget blocProvider(
-    final File videoFile,
-  ) {
+  static Widget blocProvider(final File videoFile) {
     return BlocProvider(
       create: (context) {
         return VideoPlayerCubit(videoFile);

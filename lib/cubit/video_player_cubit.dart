@@ -7,13 +7,14 @@ import 'package:my_storage/cubit/video_player_state.dart';
 
 class VideoPlayerCubit extends Cubit<InitializationVideoPlayerState> {
   VideoPlayerCubit(File videoFile, {bool autoPlay = true})
-      : super(InitializationVideoPlayerState.initialize(
+      : super(InitializationVideoPlayerState(
           videoFile: videoFile,
         )) {
     state.mainController.addListener(() {});
     state.mainController.setLooping(false);
     state.mainController.initialize().then((_) {
-      emit(state.copyWith(loaded: true, controller: state.mainController));
+      state.loaded = true;
+      emit(state);
       if (autoPlay) {
         state.mainController.play();
       }
@@ -25,8 +26,11 @@ class VideoPlayerCubit extends Cubit<InitializationVideoPlayerState> {
 
   Future<bool> dispose() async {
     bool isDispose = true;
-    state.mainController.pause();
     state.mainController.dispose();
+    state.loaded = false;
+    state.videoFile = File('');
+      emit(state);
     return isDispose;
   }
+  
 }
