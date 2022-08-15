@@ -86,10 +86,10 @@ class MyStorageProvider {
   }
 
   Future<File> getVideoFile({required String fileId}) async {
-    File videoFile = File('');
+    late File videoFile;
 
     await getDocDirectory().then((directory) {
-      videoFile = File('${directory.path}/video.mp4');
+      videoFile = File('${directory.path}/$fileId.mp4');
     }).then((value) {
       try {
         storage.getFileView(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {

@@ -5,32 +5,17 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_storage/cubit/video_player_state.dart';
 
-class VideoPlayerCubit extends Cubit<InitializationVideoPlayerState> {
-  VideoPlayerCubit(File videoFile, {bool autoPlay = true})
-      : super(InitializationVideoPlayerState(
-          videoFile: videoFile,
-        )) {
-    state.mainController.addListener(() {});
-    state.mainController.setLooping(false);
+class VideoPlayerCubit extends Cubit<VideoPlayerState> {
+  VideoPlayerCubit({required File videoFile}) : super(VideoPlayerState.initialize(videoFile: videoFile)) {
     state.mainController.initialize().then((_) {
-      state.loaded = true;
-      emit(state);
-      if (autoPlay) {
-        state.mainController.play();
-      }
+      emit(state.copyWith(loaded: true));
+      state.mainController.play();
+      print(state.mainController);
     }).onError((error, stackTrace) {
       print(error);
       print(stackTrace);
     });
   }
-
-  Future<bool> dispose() async {
-    bool isDispose = true;
-    state.mainController.dispose();
-    state.loaded = false;
-    state.videoFile = File('');
-      emit(state);
-    return isDispose;
-  }
-  
 }
+
+

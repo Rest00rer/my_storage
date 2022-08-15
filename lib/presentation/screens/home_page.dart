@@ -34,7 +34,7 @@ class Files extends StatelessWidget {
         }
         if (state is StorageLoadedState) {
           return StreamBuilder<Object>(
-              stream: BlocProvider.of<MyStorageCubit>(context).stream,//context.read<MyStorageCubit>().stream,
+              stream: BlocProvider.of<MyStorageCubit>(context).stream,
               builder: (context, snapshot) {
                 return GridView.builder(
                   padding: const EdgeInsets.all(20.0),
@@ -46,19 +46,21 @@ class Files extends StatelessWidget {
                   ),
                   itemCount: state.myStorage.files.length,
                   itemBuilder: (context, i) {
-                    // _loadPreview(myFiles[i].$id);
-                    return Column(
-                      children: [
-                        DropdownMenu(fileId: state.myStorage.files[i].$id),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Text(
-                            state.myStorage.files[i].name,
-                            maxLines: 1,
-                            overflow: TextOverflow.visible,
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).pushNamed('/fullScreen', arguments: state.myStorage.files[i].$id),
+                      child: Column(
+                        children: [
+                          DropdownMenu(fileId: state.myStorage.files[i].$id),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Text(
+                              state.myStorage.files[i].name,
+                              maxLines: 1,
+                              overflow: TextOverflow.visible,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 );

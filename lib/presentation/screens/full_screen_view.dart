@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +32,7 @@ class FullScreenPage extends StatelessWidget {
               if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
                 return Image.memory(snapshot.data);
               }
-              if (/*mime == 'video/mp4'*/true) {
+              if (/*mime == 'video/mp4'*/ true) {
                 return VideoPlayerWidget(fileId: fileId);
               }
               /*else {
@@ -68,7 +68,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           return Video.blocProvider(
-            snapshot.data!,
+            videoFile: snapshot.data!,
           );
         } else {
           return Container();
