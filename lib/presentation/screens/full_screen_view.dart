@@ -1,9 +1,8 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mime/mime.dart';
+import 'package:mime/mime.dart' as mimeService;
 import 'package:my_storage/cubit/my_storage_cubit.dart';
+import 'package:my_storage/presentation/widegets/dropdown_menu.dart';
 import 'package:my_storage/presentation/widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
@@ -19,33 +18,25 @@ class FullScreenPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Full Screen View'),
       ),
-      body: BlocBuilder<MyStorageCubit, MyStorageState>(builder: (context, state) {
-        if (state is StorageLoadedState) {
-          return FutureBuilder(
-            future: myStorageCubit.getFileView(fileId),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                mime = lookupMimeType('', headerBytes: snapshot.data);
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
-                return Image.memory(snapshot.data);
-              }
-              if (/*mime == 'video/mp4'*/ true) {
-                return VideoPlayerWidget(fileId: fileId);
-              }
-              /*else {
-                return const Center(child: Text('Ошибка, повторите запрос позже'));
-              }*/
-            },
-          );
-        } else {
-          return const Center(
-            child: Text('text'),
-          );
-        }
-      }),
+      body: FutureBuilder(
+        future: myStorageCubit.getFileView(fileId),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            final List<int> data = snapshot.data;
+            mime = mimeService.lookupMimeType('', headerBytes: data) ?? 'video/mp4v';
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (mime == 'image/png' || mime == 'image/jpeg' || mime == 'image/gif' || mime == 'image/tiff') {
+            return Image.memory(snapshot.data);
+          }
+          if (mime == 'video/mp4v') {
+            return VideoPlayerWidget(fileId: fileId);
+          } else {
+            return const Center(child: Text('Ошибка, повторите запрос позже'));
+          }
+        },
+      ),
     );
   }
 }

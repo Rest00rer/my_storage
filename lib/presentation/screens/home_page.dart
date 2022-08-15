@@ -46,9 +46,7 @@ class Files extends StatelessWidget {
                   ),
                   itemCount: state.myStorage.files.length,
                   itemBuilder: (context, i) {
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed('/fullScreen', arguments: state.myStorage.files[i].$id),
-                      child: Column(
+                    return Column(
                         children: [
                           DropdownMenu(fileId: state.myStorage.files[i].$id),
                           SingleChildScrollView(
@@ -60,8 +58,7 @@ class Files extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ),
-                    );
+                      );
                   },
                 );
               });

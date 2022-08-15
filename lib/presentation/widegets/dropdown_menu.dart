@@ -15,12 +15,15 @@ class DropdownMenu extends StatelessWidget {
 
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
-        customButton: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-          padding: const EdgeInsets.all(15.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: FilePreview(fileId: fileId),
+        customButton: GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/fullScreen', arguments: fileId),
+          child: Container(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+            padding: const EdgeInsets.all(15.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: FilePreview(fileId: fileId),
+            ),
           ),
         ),
         openWithLongPress: true,
