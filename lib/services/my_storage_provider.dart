@@ -1,9 +1,14 @@
 import 'dart:io';
+import 'package:appwrite/models.dart' as appwritefile;
 import 'package:filesaverz/filesaverz.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
+import 'dart:js' as js; // ignore: avoid_web_libraries_in_flutter
 
 const endPoint = "http://localhost:80/v1";
 const emulatorEndPoint = "http://10.0.2.2:80/v1";
@@ -24,7 +29,7 @@ class MyStorageProvider {
 
   void initialize() {
     client = Client()
-      ..setEndpoint(emulatorEndPoint) //! emulator or web
+      ..setEndpoint(endPoint) //! emulator or web
       ..setProject(projectId);
     storage = Storage(client);
     realtime = Realtime(client);
@@ -104,22 +109,42 @@ class MyStorageProvider {
   }
 
   downloadFile({required String fileId, required BuildContext context}) async {
-    final FileSaver fileSaver = FileSaver(initialFileName: 'Untitled File', fileTypes: const ['txt', 'pdf', 'mp4', 'jpeg', 'png', 'wav', 'mp3']);
-    try {
-      storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
-        fileSaver.writeAsBytesSync(uint8ListBytes, context: context);
-      });
-    } on AppwriteException catch (e) {
-      throw Exception(e.message);
+    if (!kIsWeb) {
+      final FileSaver fileSaver = FileSaver(initialFileName: 'Untitled File', fileTypes: const ['txt', 'pdf', 'mp4', 'jpeg', 'png', 'wav', 'mp3']);
+      try {
+        storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+          fileSaver.writeAsBytesSync(uint8ListBytes, context: context);
+        });
+      } on AppwriteException catch (e) {
+        throw Exception(e.message);
+      }
+    } else {
+      try {
+        storage.getFile(bucketId: bucketId, fileId: fileId).then((fileResponse) {
+          final appwritefile.File file = fileResponse;
+          storage.getFile(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+            js.context.callMethod("saveAs", [
+              html.Blob([uint8ListBytes]),
+              file.name
+            ]);
+          });
+        });
+      } on AppwriteException catch (e) {
+        throw Exception(e.message);
+      }
     }
   }
 
   renameFile({required String fileId, required String newName}) async {
-    late final InputFile file;
-    await storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
-      file = InputFile(bytes: uint8ListBytes, filename: newName);
-    });
-    await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
-    await deleteFile(fileId);
+    if (!kIsWeb) {
+      late final InputFile file;
+      await storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+        file = InputFile(bytes: uint8ListBytes, filename: newName);
+      });
+      await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
+      await deleteFile(fileId);
+    } /*else {
+      js.context.callMethod("saveAs", [html.Blob([bytes]), fileName]);
+    }*/
   }
 }
