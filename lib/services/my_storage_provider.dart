@@ -6,7 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js; // ignore: avoid_web_libraries_in_flutter
 
@@ -55,15 +55,24 @@ class MyStorageProvider {
   }
 
   createFile() async {
-    late final InputFile file;
-    try {
-      await FilePicker.platform.pickFiles().then((result) {
-        if (result == null) return;
-        file = InputFile(path: result.files.single.path, filename: result.files.single.name);
+    if (!kIsWeb) {
+      late final InputFile file;
+      try {
+        await FilePicker.platform.pickFiles().then((result) {
+          if (result == null) return;
+          file = InputFile(path: result.files.single.path, filename: result.files.single.name);
+        });
+        await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
+      } on AppwriteException catch (e) {
+        throw Exception(e.message);
+      }
+    } else {
+      late final InputFile file;
+      FilePickerResult? result = await FilePicker.platform.pickFiles().then((result) async {
+        file = InputFile(bytes: result!.files.first.bytes, filename: result.files.first.name);
+        await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
+        return null;
       });
-      await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
-    } on AppwriteException catch (e) {
-      throw Exception(e.message);
     }
   }
 
