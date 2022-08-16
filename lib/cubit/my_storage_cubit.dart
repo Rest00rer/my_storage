@@ -69,4 +69,7 @@ class MyStorageCubit extends Cubit<MyStorageState> {
     _myStorageProvider.downloadFile(fileId: fileId, context: context);
   }
 
+  Future<void>renameFile({required String fileId, required String newName})async {
+    _myStorageProvider.renameFile(fileId: fileId, newName: newName);
+  }
 }

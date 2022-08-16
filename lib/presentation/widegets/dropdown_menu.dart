@@ -1,5 +1,3 @@
-
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +11,6 @@ class DropdownMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
         customButton: GestureDetector(
@@ -72,9 +69,6 @@ class FilePreview extends StatelessWidget {
   }
 }
 
-class Uint8List {
-}
-
 class MenuItem {
   final String text;
   final IconData icon;
@@ -124,11 +118,46 @@ class MenuItems {
         myStorageCubit.downloadFile(fileId: fileId, context: context);
         break;
       case MenuItems.rename:
-        // if(newFileName != null) myStorageCubit.renameFile(fileId, newFileName);
+        inputFileNameDialog(context, fileId: fileId);
         break;
       case MenuItems.remove:
         myStorageCubit.deleteFile(fileId);
         break;
     }
   }
+}
+
+Future inputFileNameDialog(BuildContext context, {required String fileId}) async {
+  final MyStorageCubit myStorageCubit = context.read<MyStorageCubit>();
+  String newName = '';
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Переименовать файл'),
+        content: Row(
+          children: <Widget>[
+            Expanded(
+                child: TextField(
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'введите новое имя файла', hintText: 'file name'),
+              onChanged: (value) {
+                newName = value;
+              },
+            ))
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ок'),
+            onPressed: () {
+              myStorageCubit.renameFile(fileId: fileId, newName: newName);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

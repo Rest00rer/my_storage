@@ -113,4 +113,13 @@ class MyStorageProvider {
       throw Exception(e.message);
     }
   }
+
+  renameFile({required String fileId, required String newName}) async {
+    late final InputFile file;
+    await storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+      file = InputFile(bytes: uint8ListBytes, filename: newName);
+    });
+    await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
+    await deleteFile(fileId);
+  }
 }
