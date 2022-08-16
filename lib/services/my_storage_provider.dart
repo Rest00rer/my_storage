@@ -52,12 +52,10 @@ class MyStorageProvider {
   createFile() async {
     late final file;
     try {
-      // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
       await FilePicker.platform.pickFiles().then((result) {
         if (result == null ) return;
         file = InputFile(path: result.files.single.path, filename: result.files.single.name);
       });
-      // final file = InputFile(path: image.path, filename: image.name);
       await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
     } on AppwriteException catch (e) {
       throw Exception(e.message);
