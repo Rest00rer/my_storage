@@ -7,8 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/my_storage_cubit.dart';
 
 class DropdownMenu extends StatelessWidget {
-  const DropdownMenu({super.key, required this.fileId});
+  const DropdownMenu({super.key, required this.fileId, this.newFileName});
   final String fileId;
+  final String? newFileName;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class DropdownMenu extends StatelessWidget {
           ),
         ],
         onChanged: (value) {
-          MenuItems.onChanged(context, value as MenuItem, fileId);
+          MenuItems.onChanged(context, value as MenuItem, fileId, newFileName);
         },
         itemHeight: 50,
         itemPadding: const EdgeInsets.only(left: 16, right: 16),
@@ -113,7 +114,7 @@ class MenuItems {
     );
   }
 
-  static onChanged(BuildContext context, MenuItem item, String fileId) {
+  static onChanged(BuildContext context, MenuItem item, String fileId, String? newFileName) {
     final MyStorageCubit myStorageCubit = context.read<MyStorageCubit>();
     switch (item) {
       case MenuItems.open:
@@ -123,7 +124,7 @@ class MenuItems {
         //Do something
         break;
       case MenuItems.rename:
-        //Do something
+        // if(newFileName != null) myStorageCubit.renameFile(fileId, newFileName);
         break;
       case MenuItems.remove:
         myStorageCubit.deleteFile(fileId);

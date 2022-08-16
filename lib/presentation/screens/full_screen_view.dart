@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mime/mime.dart' as mimeService;
+import 'package:mime/mime.dart' as mime_service;
 import 'package:my_storage/cubit/my_storage_cubit.dart';
-import 'package:my_storage/presentation/widegets/dropdown_menu.dart';
 import 'package:my_storage/presentation/widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
@@ -12,7 +11,7 @@ class FullScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myStorageCubit = BlocProvider.of<MyStorageCubit>(context);
-    late final mime;
+    late final String mime;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +22,7 @@ class FullScreenPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
             final List<int> data = snapshot.data;
-            mime = mimeService.lookupMimeType('', headerBytes: data) ?? 'video/mp4v';
+            mime = mime_service.lookupMimeType('', headerBytes: data) ?? 'video/mp4v';
           } else {
             return const Center(child: CircularProgressIndicator());
           }
@@ -42,7 +41,7 @@ class FullScreenPage extends StatelessWidget {
 }
 
 class VideoPlayerWidget extends StatefulWidget {
-  final fileId;
+  final String fileId;
   const VideoPlayerWidget({Key? key, required this.fileId}) : super(key: key);
 
   @override

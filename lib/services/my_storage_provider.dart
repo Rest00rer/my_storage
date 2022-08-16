@@ -1,10 +1,9 @@
-
-
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'dart:io';
 
 import 'package:appwrite/appwrite.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -51,10 +50,14 @@ class MyStorageProvider {
   }
 
   createFile() async {
+    late final file;
     try {
-      var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
-      final file = InputFile(path: image.path, filename: image.name);
+      // var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      await FilePicker.platform.pickFiles().then((result) {
+        if (result == null ) return;
+        file = InputFile(path: result.files.single.path, filename: result.files.single.name);
+      });
+      // final file = InputFile(path: image.path, filename: image.name);
       await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
     } on AppwriteException catch (e) {
       throw Exception(e.message);
@@ -95,6 +98,7 @@ class MyStorageProvider {
         storage.getFileView(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
           videoFile.writeAsBytes(uint8ListBytes).then((_) => _);
         });
+        print(videoFile.path);
       } on AppwriteException catch (e) {
         throw Exception(e.message);
       }
