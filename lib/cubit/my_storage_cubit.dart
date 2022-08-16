@@ -1,9 +1,8 @@
-// ignore_for_file: depend_on_referenced_packages, avoid_print
 
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:my_storage/models/my_storage.dart';
 import 'package:my_storage/services/my_storage_provider.dart';
 
@@ -18,14 +17,14 @@ class MyStorageCubit extends Cubit<MyStorageState> {
     _myStorageProvider.initialize();
     subscription = _myStorageProvider.subscriptionStream;
     subscription.listen((response) {
-      getFiles();
+      getListOfFiles();
     });
   }
 
-  Future<void> getFiles() async {
+  Future<void> getListOfFiles() async {
     try {
       emit(StorageLoadingState());
-      final response = await _myStorageProvider.getFiles();
+      final response = await _myStorageProvider.getListOfFiles();
       emit(StorageLoadedState(myStorage: MyStorage(files: response.files)));
     } catch (errorMsg) {
       emit(StorageErrorState(errorMsg: errorMsg.toString()));
@@ -37,7 +36,7 @@ class MyStorageCubit extends Cubit<MyStorageState> {
       final response = await _myStorageProvider.createFile();
       emit(StorageLoadedState(myStorage: MyStorage(files: response.files)));
     } catch (errorMsg) {
-      print(errorMsg);
+      emit(StorageErrorState(errorMsg: errorMsg.toString()));
     }
   }
 
@@ -53,8 +52,8 @@ class MyStorageCubit extends Cubit<MyStorageState> {
     }
   }
 
-  Future<dynamic> getFileView(String fileId) {
-    return _myStorageProvider.getFileView(fileId: fileId);
+  Future<dynamic> getFileForView(String fileId) {
+    return _myStorageProvider.getFileForView(fileId: fileId);
   }
 
   Future<Directory> getDocDirectory() async {
@@ -65,4 +64,9 @@ class MyStorageCubit extends Cubit<MyStorageState> {
   Future<File>getVideoFile({required String fileId}) async {
     return _myStorageProvider.getVideoFile(fileId: fileId);
   }
+
+  Future<void>downloadFile({required String fileId, required BuildContext context})async {
+    _myStorageProvider.downloadFile(fileId: fileId, context: context);
+  }
+
 }

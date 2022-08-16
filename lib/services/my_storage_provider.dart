@@ -1,10 +1,8 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'dart:io';
-
+import 'package:filesaverz/filesaverz.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 const endPoint = "http://localhost:80/v1";
@@ -18,9 +16,11 @@ class MyStorageProvider {
   late final Account account;
   late final Storage storage;
   late final Realtime realtime;
-  late final subscription;
+  late final dynamic subscription;
 
   Stream get subscriptionStream => subscription.stream;
+
+  Future<Directory> getDocDirectory() async => await getApplicationDocumentsDirectory();
 
   void initialize() {
     client = Client()
@@ -30,7 +30,7 @@ class MyStorageProvider {
     realtime = Realtime(client);
     login();
     subscription = realtime.subscribe(['files']);
-    getFiles();
+    getListOfFiles();
   }
 
   login() async {
@@ -41,7 +41,7 @@ class MyStorageProvider {
     }
   }
 
-  getFiles() async {
+  getListOfFiles() async {
     try {
       return await storage.listFiles(bucketId: bucketId);
     } on AppwriteException catch (e) {
@@ -50,10 +50,10 @@ class MyStorageProvider {
   }
 
   createFile() async {
-    late final file;
+    late final InputFile file;
     try {
       await FilePicker.platform.pickFiles().then((result) {
-        if (result == null ) return;
+        if (result == null) return;
         file = InputFile(path: result.files.single.path, filename: result.files.single.name);
       });
       await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
@@ -78,7 +78,7 @@ class MyStorageProvider {
     }
   }
 
-  getFileView({required String fileId}) async {
+  getFileForView({required String fileId}) async {
     try {
       return storage.getFileView(bucketId: bucketId, fileId: fileId);
     } on AppwriteException catch (e) {
@@ -94,9 +94,8 @@ class MyStorageProvider {
     }).then((value) {
       try {
         storage.getFileView(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
-          videoFile.writeAsBytes(uint8ListBytes).then((_) => _);
+          videoFile.writeAsBytesSync(uint8ListBytes);
         });
-        print(videoFile.path);
       } on AppwriteException catch (e) {
         throw Exception(e.message);
       }
@@ -104,5 +103,14 @@ class MyStorageProvider {
     return videoFile;
   }
 
-  Future<Directory> getDocDirectory() async => await getApplicationDocumentsDirectory();
+  downloadFile({required String fileId, required BuildContext context}) async {
+    final FileSaver fileSaver = FileSaver(initialFileName: 'Untitled File', fileTypes: const ['txt', 'pdf', 'mp4', 'jpeg', 'png', 'wav', 'mp3']);
+    try {
+      storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
+        fileSaver.writeAsBytesSync(uint8ListBytes, context: context);
+      });
+    } on AppwriteException catch (e) {
+      throw Exception(e.message);
+    }
+  }
 }

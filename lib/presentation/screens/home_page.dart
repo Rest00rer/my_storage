@@ -29,7 +29,7 @@ class Files extends StatelessWidget {
     return BlocBuilder<MyStorageCubit, MyStorageState>(
       builder: (context, state) {
         if (state is StorageLoadingState) {
-          myStorageCubit.getFiles();
+          myStorageCubit.getListOfFiles();
           return const Center(child: CircularProgressIndicator());
         }
         if (state is StorageLoadedState) {

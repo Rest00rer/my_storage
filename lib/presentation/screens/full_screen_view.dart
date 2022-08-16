@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mime/mime.dart' as mime_service;
-import 'package:my_storage/cubit/my_storage_cubit.dart';
-import 'package:my_storage/presentation/widegets/video.dart';
+import '../../cubit/my_storage_cubit.dart';
+import '../widegets/video.dart';
 
 class FullScreenPage extends StatelessWidget {
   final String fileId;
@@ -18,7 +18,7 @@ class FullScreenPage extends StatelessWidget {
         title: const Text('Full Screen View'),
       ),
       body: FutureBuilder(
-        future: myStorageCubit.getFileView(fileId),
+        future: myStorageCubit.getFileForView(fileId),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
             final List<int> data = snapshot.data;

@@ -121,7 +121,7 @@ class MenuItems {
         Navigator.of(context).pushNamed('/fullScreen', arguments: fileId);
         break;
       case MenuItems.download:
-        //Do something
+        myStorageCubit.downloadFile(fileId: fileId, context: context);
         break;
       case MenuItems.rename:
         // if(newFileName != null) myStorageCubit.renameFile(fileId, newFileName);
