@@ -12,6 +12,11 @@ class VideoPlayerState {
     return VideoPlayerState._(mainController: controller, loaded: false);
   }
 
+    factory VideoPlayerState.webInitialize({required String dataSource}) {
+    final controller = VideoPlayerController.network(dataSource);
+    return VideoPlayerState._(mainController: controller, loaded: false);
+  }
+
   bool get notLoaded => !loaded;
 
   VideoPlayerState copyWith({VideoPlayerController? controller, bool? loaded}) {

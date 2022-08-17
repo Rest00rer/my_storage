@@ -6,9 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
-import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
-import 'dart:js' as js; // ignore: avoid_web_libraries_in_flutter
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_html/html.dart' as html;
+// import 'dart:js' as js;
 
 const endPoint = "http://localhost:80/v1";
 const emulatorEndPoint = "http://10.0.2.2:80/v1";
@@ -29,10 +29,11 @@ class MyStorageProvider {
 
   void initialize() {
     client = Client()
-      ..setEndpoint(endPoint) //! emulator or web
+      ..setEndpoint(kIsWeb ? endPoint : emulatorEndPoint) //! emulator or web
       ..setProject(projectId);
     storage = Storage(client);
     realtime = Realtime(client);
+    account = Account(client);
     login();
     subscription = realtime.subscribe(['files']);
     getListOfFiles();
@@ -40,9 +41,9 @@ class MyStorageProvider {
 
   login() async {
     try {
-      await Account(client).getSessions();
+      await account.getSessions();
     } on AppwriteException catch (_) {
-      await Account(client).createAnonymousSession();
+      await account.createAnonymousSession();
     }
   }
 
@@ -68,7 +69,7 @@ class MyStorageProvider {
       }
     } else {
       late final InputFile file;
-      FilePickerResult? result = await FilePicker.platform.pickFiles().then((result) async {
+      await FilePicker.platform.pickFiles().then((result) async {
         file = InputFile(bytes: result!.files.first.bytes, filename: result.files.first.name);
         await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
         return null;
@@ -131,11 +132,10 @@ class MyStorageProvider {
       try {
         storage.getFile(bucketId: bucketId, fileId: fileId).then((fileResponse) {
           final appwritefile.File file = fileResponse;
-          storage.getFile(bucketId: bucketId, fileId: fileId).then((uint8ListBytes) {
-            js.context.callMethod("saveAs", [
-              html.Blob([uint8ListBytes]),
-              file.name
-            ]);
+          storage.getFile(bucketId: bucketId, fileId: fileId).then((file) {
+            html.AnchorElement anchorElement = html.AnchorElement(href: file.toString());
+            anchorElement.download = file.name;
+            anchorElement.click();
           });
         });
       } on AppwriteException catch (e) {
@@ -152,8 +152,27 @@ class MyStorageProvider {
       });
       await storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
       await deleteFile(fileId);
-    } /*else {
-      js.context.callMethod("saveAs", [html.Blob([bytes]), fileName]);
-    }*/
+    } else {
+      await storage.getFileView(bucketId: bucketId, fileId: fileId).then((bytes) {
+        InputFile file = InputFile(bytes: bytes, filename: newName);
+        storage.createFile(bucketId: bucketId, fileId: 'unique()', file: file);
+        deleteFile(fileId);
+      });
+      return null;
+    }
   }
+
+  Future<String> getJvt() async {
+    late final String jwt;
+    await account.createJWT().then((response) {
+      jwt = response.jwt;
+    });
+    return jwt;
+  }
+
+  // Future<String> getVideoDataSource({required String fileId}) {
+  //   late String dataSource = '';
+  //   return dataSource;
+  //   client.webAuth(url)
+  // }
 }

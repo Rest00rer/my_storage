@@ -61,9 +61,6 @@ class MyStorageCubit extends Cubit<MyStorageState> {
     return resultDir;
   }
 
-  Future<File>getVideoFile({required String fileId}) async {
-    return _myStorageProvider.getVideoFile(fileId: fileId);
-  }
 
   Future<void>downloadFile({required String fileId, required BuildContext context})async {
     _myStorageProvider.downloadFile(fileId: fileId, context: context);
@@ -72,4 +69,16 @@ class MyStorageCubit extends Cubit<MyStorageState> {
   Future<void>renameFile({required String fileId, required String newName})async {
     _myStorageProvider.renameFile(fileId: fileId, newName: newName);
   }
+
+  Future<File>getVideoFile({required String fileId}) async {
+    return _myStorageProvider.getVideoFile(fileId: fileId);
+  }
+
+  Future<String> getJvt() async{
+    return _myStorageProvider.getJvt();
+  }
+  
+  //  Future<File>getWebVideoFile({required String fileId}) async {
+  //   return _myStorageProvider.getWebVideoFile(fileId: fileId);
+  //  }
 }

@@ -19,8 +19,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.1
+  js: ^0.6.4
   mime: ^1.0.2
   path_provider: ^2.0.11
+  universal_html: ^2.0.8
   video_player: ^2.4.6
 
 dev_dependencies:
