@@ -130,13 +130,19 @@ class MyStorageProvider {
       }
     } else {
       try {
-        storage.getFile(bucketId: bucketId, fileId: fileId).then((fileResponse) {
-          final appwritefile.File file = fileResponse;
-          storage.getFile(bucketId: bucketId, fileId: fileId).then((file) {
-            html.AnchorElement anchorElement = html.AnchorElement(href: file.toString());
-            anchorElement.download = file.name;
-            anchorElement.click();
-          });
+        late final String fileName;
+        await storage.getFile(bucketId: bucketId, fileId: fileId).then((file) => fileName = file.name);
+        storage.getFileDownload(bucketId: bucketId, fileId: fileId).then((bytes) {
+          final blob = html.Blob([bytes]);
+          final url = html.Url.createObjectUrlFromBlob(blob);
+          final anchor = html.document.createElement('a') as html.AnchorElement
+            ..href = url
+            ..style.display = 'none'
+            ..download = fileName;
+          html.document.body?.children.add(anchor);
+          anchor.click();
+          html.document.body!.children.remove(anchor);
+          html.Url.revokeObjectUrl(url);
         });
       } on AppwriteException catch (e) {
         throw Exception(e.message);
